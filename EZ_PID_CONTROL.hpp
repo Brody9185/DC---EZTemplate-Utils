@@ -33,7 +33,7 @@ namespace DC{
         {
             pidvals = pid;
             ezPID.constants_set(pidvals[0], pidvals[1],pidvals[2], pidvals[3]);
-            ezPID.exit_condition_set(80, 50, 300, 150, 500, 500);
+            setExitCondition(80, 50, 300, 150, 500, 500);
         }
 
         
@@ -55,6 +55,26 @@ namespace DC{
 
     void setManSpeed(double speed){
         manSpeed = speed;
+    }
+
+    void setExitCondition(int smallExitTime, double smallError, int bigExitTime = 0,
+                          double bigError = 0, int velocityExitTime = 0, int mATimeout = 0){
+        ezPID.exit_condition_set(smallExitTime, smallError, bigExitTime, bigError,
+                                 velocityExitTime, mATimeout);
+    }
+
+    ez::exit_output exitCondition(bool print = false){
+        std::vector<pros::Motor> sensorMotors;
+        for(const auto port : sensors.get_port_all()){
+            sensorMotors.emplace_back(port);
+        }
+        return ezPID.exit_condition(sensorMotors, print);
+    }
+
+    void waitUntilDone(bool print = false){
+        while(exitCondition(print) == ez::RUNNING){
+            pros::delay(ez::util::DELAY_TIME);
+        }
     }
 
     void setMotorPowerPID(double v = 0, double p= 0, double i = 0, double d = 0){
@@ -186,6 +206,26 @@ namespace DC{
 
     void setManSpeed(double speed){
         manSpeed = speed;
+    }
+
+    void setExitCondition(int smallExitTime, double smallError, int bigExitTime = 0,
+                          double bigError = 0, int velocityExitTime = 0, int mATimeout = 0){
+        ezPID.exit_condition_set(smallExitTime, smallError, bigExitTime, bigError,
+                                 velocityExitTime, mATimeout);
+    }
+
+    ez::exit_output exitCondition(bool print = false){
+        std::vector<pros::Motor> sensorMotors;
+        for(const auto port : sensors.get_port_all()){
+            sensorMotors.emplace_back(port);
+        }
+        return ezPID.exit_condition(sensorMotors, print);
+    }
+
+    void waitUntilDone(bool print = false){
+        while(exitCondition(print) == ez::RUNNING){
+            pros::delay(ez::util::DELAY_TIME);
+        }
     }
 
     void Setmmotors(double input){
